@@ -3,6 +3,11 @@
 venv/
 ENV/
 
+
+.venv/
+.env
+__pycache__/
+.pytest_cache/
 # Environment variables & secrets (NEVER commit these!)
 .env
 .env.local
@@ -28,3 +33,4 @@ htmlcov/
 
 # Log files
 *.log
+
