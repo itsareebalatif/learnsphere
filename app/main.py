@@ -1,4 +1,4 @@
-# app/main.py
+
 from fastapi import FastAPI
 from nicegui import ui
 from app.config import settings
