@@ -10,7 +10,7 @@ from app.models.base import Base
 from app.models.enums import OrgType, Region
 
 if TYPE_CHECKING:
-    from app.models.User import User
+    from app.models.user import User
 
 
 class Organisation(Base):

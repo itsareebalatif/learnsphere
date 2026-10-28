@@ -10,8 +10,8 @@ from app.models.base import Base
 from app.models.enums import Role
 
 if TYPE_CHECKING:
-    from app.models.Organisation import Organisation
-    from app.models.ParentLink import ParentLink
+    from app.models.organisation import Organisation
+    from app.models.parent_link import ParentLink
 
 
 class User(Base):
