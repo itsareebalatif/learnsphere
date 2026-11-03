@@ -26,9 +26,13 @@ class User(Base):
         ForeignKey("organisations.org_id", ondelete="CASCADE"),
         index=True,
     )
+    # Supabase Auth user id (the JWT "sub"); Supabase owns the password
+    auth_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True), unique=True, index=True
+    )
     full_name: Mapped[str] = mapped_column(String(120), nullable=False)
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
-    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    password_hash: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     role: Mapped[Role] = mapped_column(Enum(Role, name="user_role"), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()

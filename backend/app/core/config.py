@@ -1,13 +1,31 @@
-import os
-from dotenv import load_dotenv
+from pathlib import Path
 
-load_dotenv()
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-class Settings:
-    SUPABASE_URL: str = os.getenv("SUPABASE_URL", "")
-    SUPABASE_ANON_KEY: str = os.getenv("SUPABASE_ANON_KEY", "")
-    SUPABASE_SERVICE_KEY: str = os.getenv("SUPABASE_SERVICE_KEY", "")
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "")
-    STORAGE_SECRET: str = os.getenv("STORAGE_SECRET", "default-secret-key")
+BACKEND_DIR = Path(__file__).resolve().parents[2]
+
+
+class Settings(BaseSettings):
+
+    model_config = SettingsConfigDict(
+        env_file=BACKEND_DIR / ".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
+
+    supabase_url: str
+    supabase_anon_key: str
+    supabase_service_key: str
+    database_url: str
+    frontend_origin: str = "http://localhost:5173"
+
+    @property
+    def cors_origins(self) -> list[str]:
+        return [
+            origin.strip()
+            for origin in self.frontend_origin.split(",")
+            if origin.strip()
+        ]
+
 
 settings = Settings()

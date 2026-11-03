@@ -9,7 +9,7 @@ from alembic import context
 sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), "..")))
 
 # Import app configuration and SQLModel metadata
-from app.config import settings
+from app.core.config import settings
 from app.models import Base
 
 # Alembic Config object
@@ -25,7 +25,7 @@ target_metadata = Base.metadata
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode."""
     # Pass settings.DATABASE_URL directly as a string
-    url = settings.DATABASE_URL
+    url = settings.database_url
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -41,7 +41,7 @@ def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
     # Get config section dictionary and set sqlalchemy.url dynamically from settings
     configuration = config.get_section(config.config_ini_section, {})
-    configuration["sqlalchemy.url"] = settings.DATABASE_URL
+    configuration["sqlalchemy.url"] = settings.database_url
 
     connectable = engine_from_config(
         configuration,
