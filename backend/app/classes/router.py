@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.classes import service
@@ -15,7 +15,7 @@ router = APIRouter(prefix="/api/classes", tags=["classes"])
 teacher_only = require_role(Role.teacher)
 
 
-@router.post("", response_model=ClassOut, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=ClassOut)
 def create_class(
     data: ClassCreate, teacher: User = Depends(teacher_only), session: Session = Depends(get_session)
 ):
@@ -44,7 +44,7 @@ def list_students(
     return service.list_students(session, teacher, class_id)
 
 
-@router.post("/{class_id}/students", response_model=StudentOut, status_code=status.HTTP_201_CREATED)
+@router.post("/{class_id}/students", response_model=StudentOut)
 def add_student(
     class_id: uuid.UUID,
     data: AddStudentIn,

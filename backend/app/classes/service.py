@@ -1,10 +1,10 @@
 import uuid
 
-from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.classes.schemas import AddStudentIn, ClassCreate, ClassOut, StudentOut
+from app.core.errors import BadRequestError, ConflictError, NotFoundError
 from app.models import Enrolment, SchoolClass, User
 from app.models.enums import Role
 
@@ -52,10 +52,9 @@ def list_my_classes(session: Session, user: User) -> list[ClassOut]:
 
 
 def get_owned_class(session: Session, teacher: User, class_id: uuid.UUID) -> SchoolClass:
-    """404 (not 403) for other teachers' classes, so ids can't be probed."""
     cls = session.get(SchoolClass, class_id)
     if cls is None or cls.teacher_id != teacher.user_id:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "Class not found")
+        raise NotFoundError("Class not found")
     return cls
 
 
@@ -91,19 +90,17 @@ def add_student(session: Session, teacher: User, class_id: uuid.UUID, data: AddS
         session.add(student)
         session.flush()
     elif student.role != Role.student:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST, "That email belongs to a non-student account")
+        raise BadRequestError("That email belongs to a non-student account")
     elif student.org_id != teacher.org_id:
         # Never reveal or pull in students from another school.
-        raise HTTPException(status.HTTP_409_CONFLICT, "This email cannot be added to your class")
-
+        raise ConflictError("This email cannot be added to your class")
     already = session.scalar(
         select(Enrolment).where(
             Enrolment.class_id == cls.class_id, Enrolment.student_id == student.user_id
         )
     )
     if already is not None:
-        raise HTTPException(status.HTTP_409_CONFLICT, "Student is already in this class")
-
+        raise ConflictError("Student is already in this class")
     session.add(Enrolment(class_id=cls.class_id, student_id=student.user_id))
     session.commit()
     return _student_out(student)

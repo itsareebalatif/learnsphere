@@ -9,7 +9,6 @@ from app.models.base import Base
 
 
 class Subscription(Base):
-    """A school's paid plan, seats and end date."""
 
     __tablename__ = "subscriptions"
 

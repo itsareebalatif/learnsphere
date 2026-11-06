@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.core.db import get_session
@@ -13,7 +13,7 @@ router = APIRouter(prefix="/api/schools", tags=["schools"])
 admin_only = require_role(Role.admin)
 
 
-@router.post("", response_model=SchoolOut, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=SchoolOut)
 def create_school(
     data: SchoolCreate, admin: User = Depends(admin_only), session: Session = Depends(get_session)
 ):
@@ -31,7 +31,7 @@ def school_users(admin: User = Depends(admin_only), session: Session = Depends(g
     return service.list_users(session, admin.org_id)
 
 
-@router.post("/me/users", response_model=SchoolUserOut, status_code=status.HTTP_201_CREATED)
+@router.post("/me/users", response_model=SchoolUserOut)
 def invite_user(
     data: InviteIn, admin: User = Depends(admin_only), session: Session = Depends(get_session)
 ):

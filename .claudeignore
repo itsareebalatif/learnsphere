@@ -1,0 +1,49 @@
+# Dependency folders (Massive token hogs)
+node_modules/
+bower_components/
+jspm_packages/
+
+# Build and output directories
+dist/
+build/
+out/
+.next/
+.nuxt/
+target/
+bin/
+obj/
+
+# Environment files and secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Git and IDE configurations
+.git/
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+
+# Logs and system files
+*.log
+.DS_Store
+Thumbs.db
+
+# Python Specific (FastAPI)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+env/
+ENV/
+
+# React Specific (Vite / CRA / Next)
+.wxt/
+.turbo/

@@ -16,11 +16,11 @@ def test_teacher_creates_class_adds_student_and_student_sees_it(client_as, make_
     c = client_as(teacher)
 
     created = c.post("/api/classes", json={"name": "Math 101", "term": "Fall"})
-    assert created.status_code == 201
+    assert created.status_code == 200
     class_id = created.json()["class_id"]
 
     added = c.post(f"/api/classes/{class_id}/students", json={"email": "Kid@X.com", "full_name": "Kim Kid"})
-    assert added.status_code == 201
+    assert added.status_code == 200
     assert added.json()["email"] == "kid@x.com"
     assert added.json()["joined"] is False
 
@@ -38,7 +38,7 @@ def test_duplicate_student_rejected(client_as, make_user):
     c = client_as(make_user("t@x.com", Role.teacher))
     class_id = c.post("/api/classes", json={"name": "A"}).json()["class_id"]
     body = {"email": "kid@x.com"}
-    assert c.post(f"/api/classes/{class_id}/students", json=body).status_code == 201
+    assert c.post(f"/api/classes/{class_id}/students", json=body).status_code == 200
     assert c.post(f"/api/classes/{class_id}/students", json=body).status_code == 409
 
 

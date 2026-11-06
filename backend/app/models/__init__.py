@@ -1,4 +1,7 @@
 from app.models.base import Base
+from app.models.content_chunk import ContentChunk
+from app.models.course import Course
+from app.models.course_file import CourseFile
 from app.models.enrolment import Enrolment
 from app.models.organisation import Organisation
 from app.models.parent_link import ParentLink
@@ -14,4 +17,7 @@ __all__ = [
     "Subscription",
     "SchoolClass",
     "Enrolment",
+    "Course",
+    "CourseFile",
+    "ContentChunk",
 ]

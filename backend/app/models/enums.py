@@ -17,3 +17,15 @@ class Role(str, enum.Enum):
     teacher = "teacher"
     student = "student"
     parent = "parent"
+
+
+class CourseStatus(str, enum.Enum):
+    draft = "draft"
+    published = "published"
+
+
+class FileStatus(str, enum.Enum):
+    uploaded = "uploaded"
+    processing = "processing"
+    ready = "ready"
+    failed = "failed"

@@ -55,3 +55,14 @@ def client_as(db: Session):
 
     yield _client
     app.dependency_overrides.clear()
+
+
+@pytest.fixture()
+def fake_storage(monkeypatch):
+    """Replaces Supabase Storage with a dict so tests never touch the network."""
+    from app.core import storage
+
+    objects: dict[str, bytes] = {}
+    monkeypatch.setattr(storage, "upload", lambda path, data, content_type: objects.__setitem__(path, data))
+    monkeypatch.setattr(storage, "remove", lambda path: objects.pop(path, None))
+    return objects

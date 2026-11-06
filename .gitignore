@@ -3,12 +3,7 @@
 venv/
 ENV/
 
-
-.venv/
-.env
-__pycache__/
-.pytest_cache/
-# Environment variables & secrets (NEVER commit these!)
+# Environment variables & secrets (NEVER commit these)
 .env
 .env.local
 .env.*.local
@@ -18,6 +13,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
 .coverage
 htmlcov/
 
@@ -27,10 +24,18 @@ htmlcov/
 .DS_Store
 *.swp
 
-# Database / SQLite local instances (if any)
+# Database / SQLite local instances
 *.db
 *.sqlite3
 
 # Log files
 *.log
 
+# Frontend
+node_modules/
+frontend/dist/
+frontend/.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

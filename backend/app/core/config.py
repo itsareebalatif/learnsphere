@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     supabase_service_key: str
     database_url: str
     frontend_origin: str = "http://localhost:5173"
+    storage_bucket: str = "course-files"
+    max_upload_mb: int = 50  # Supabase free tier allows 50 MB per file
 
     @property
     def cors_origins(self) -> list[str]:

@@ -14,14 +14,12 @@ if TYPE_CHECKING:
 
 
 class SchoolClass(Base):
-    """A class run by one teacher (table name: classes)."""
 
     __tablename__ = "classes"
 
     class_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
-    # Nullable: a teacher who signed up alone has no school yet (FR-1)
     org_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("organisations.org_id", ondelete="CASCADE"),
@@ -33,8 +31,11 @@ class SchoolClass(Base):
         nullable=False,
         index=True,
     )
-    # Courses arrive in Week 2; no foreign key until the table exists.
-    course_id: Mapped[Optional[uuid.UUID]] = mapped_column(UUID(as_uuid=True))
+    course_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("courses.course_id", ondelete="SET NULL"),
+        index=True,
+    )
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     term: Mapped[Optional[str]] = mapped_column(String(20))
     created_at: Mapped[datetime] = mapped_column(

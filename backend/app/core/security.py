@@ -2,21 +2,28 @@ import uuid
 from typing import Callable
 
 import httpx
-from fastapi import Depends, Header, HTTPException, status
+from fastapi import Depends, Security
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.errors import ForbiddenError, ServiceUnavailableError, UnauthorizedError
 from app.core.config import settings
 from app.core.db import get_session
 from app.models import User
 from app.models.enums import Role
 
+# 1. Initialize HTTPBearer scheme
+security_scheme = HTTPBearer(auto_error=False)
 
-def get_auth_identity(authorization: str | None = Header(default=None)) -> dict:
-
-    if not authorization or not authorization.lower().startswith("bearer "):
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Missing bearer token")
-    token = authorization.split(" ", 1)[1].strip()
+def get_auth_identity(
+    credentials: HTTPAuthorizationCredentials | None = Security(security_scheme),
+) -> dict:
+    if not credentials or not credentials.credentials:
+        raise UnauthorizedError("Missing bearer token")
+    
+    # HTTPBearer automatically strips out the "Bearer " prefix for you
+    token = credentials.credentials
     try:
         res = httpx.get(
             f"{settings.supabase_url}/auth/v1/user",
@@ -24,9 +31,9 @@ def get_auth_identity(authorization: str | None = Header(default=None)) -> dict:
             timeout=10,
         )
     except httpx.HTTPError:
-        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "Auth service unreachable")
+        raise ServiceUnavailableError("Auth service unreachable")
     if res.status_code != 200:
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or expired token")
+        raise UnauthorizedError("Invalid or expired token")
     return res.json()
 
 
@@ -36,14 +43,14 @@ def get_current_user(
 ) -> User:
     user = session.scalar(select(User).where(User.auth_id == uuid.UUID(identity["id"])))
     if user is None:
-        raise HTTPException(status.HTTP_403_FORBIDDEN, "Profile not created; call /api/auth/sync")
+        raise ForbiddenError("Profile not created; call /api/auth/sync")
     return user
 
 
 def require_role(*roles: Role) -> Callable[..., User]:
     def checker(user: User = Depends(get_current_user)) -> User:
         if user.role not in roles:
-            raise HTTPException(status.HTTP_403_FORBIDDEN, "Not allowed for your role")
+            raise ForbiddenError("Not allowed for your role")
         return user
 
     return checker
